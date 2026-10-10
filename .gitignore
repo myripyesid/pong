@@ -1,0 +1,3 @@
+\# Binarios ejecutables de C server client \*.out # Archivos objeto temporales de compilación \*.o \*.a \*.so # Archivos de registro / Logs requeridos por el proyecto \*.log # Archivos de configuración de editores / IDEs .vscode/ \*.swp \*\~
+
+
