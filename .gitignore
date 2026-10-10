@@ -1,6 +1,6 @@
 \# Binarios ejecutables de C 
-server
-client 
+# server
+# client 
 *.out 
 
 # Archivos objeto temporales de compilación 
