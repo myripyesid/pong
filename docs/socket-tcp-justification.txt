@@ -1,0 +1,17 @@
+Justificacion de la Eleccion del Protocolo de Transporte: TCP vs. UDP
+
+Para el desarrollo del nucleo de comunicaciones de la aplicacion Pong -bajo una arquitectura cliente/servidor concurrente implementada en lenguaje C utilizando la API de Sockets Berkeley-, se ha tomado la decision de utilizar de manera exclusiva el protocolo TCP (SOCK_STREAM) en lugar de UDP (SOCK_DGRAM).
+
+Aunque los videojuegos en tiempo real suelen inclinarse teoricamente por UDP debido a su menor sobrecarga (overhead) y la ausencia de retransmisiones por perdida de paquetes, la seleccion de TCP en este proyecto se fundamenta en las siguientes razones tecnicas y operativas:
+
+1. Integridad del Protocolo Binario y Orden de Mensajes (MyAppGameProtocol): Dado que el requerimiento tecnico exige el diseño de un protocolo de capa de aplicacion basado en mensajes binarios estructurados para el registro, emparejamiento, control de juego y puntajes, TCP garantiza de forma nativa un flujo de bytes fiable y ordenado. Esto elimina la necesidad de implementar logica adicional en la capa de aplicacion para la gestion de paquetes perdidos, duplicados o fuera de secuencia.
+2. Naturaleza del Juego y Ancho de Banda: El juego clasico Pong posee una frecuencia de actualizacion y un volumen de datos sumamente bajos en comparacion con los videojuegos multijugador masivos modernos. La sobrecarga fija de la cabecera de TCP (20 bytes) es completamente insignificante para las redes actuales y no introduce un impacto perceptible en la latencia o jugabilidad, priorizando la estabilidad por encima de la optimizacion milisegundo a milisegundo.
+
+
+---
+
+Nota Arquitectonica (Contexto Industrial/General):
+La decision arquitectonica correcta y estandar de la industria es el uso hibrido de ambos protocolos (o el uso exclusivo de UDP/QUIC).
+
+* TCP se reserva estrictamente para el trafico de control, autenticacion, emparejamiento y transacciones criticas donde la perdida de datos es inaceptable.
+* UDP (o un protocolo confiable construido sobre UDP, como ENet o QUIC) se utiliza para el flujo constante de datos de estado en tiempo real (posiciones, fisicas e inputs del jugador). Esto previene el fenomeno de bloqueo por retardo (head-of-line blocking), donde la perdida de un solo paquete TCP detiene temporalmente la recepcion de todo el flujo de datos subsiguiente, generando tirones de retraso (lag spikes) en la experiencia de usuario.
