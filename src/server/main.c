@@ -1,14 +1,34 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "protocol.h"
+#include "logger.h"
 
-int main(void) {
-    printf("=== Verificando tamaños de estructuras de MyAppGameProtocol ===\n");
-    printf("Header:          %zu bytes (esperado: 3)\n", sizeof(msg_header_t));
-    printf("Register Req:    %zu bytes (esperado: 64)\n", sizeof(msg_register_req_t));
-    printf("Register Resp:   %zu bytes (esperado: 2)\n", sizeof(msg_register_resp_t));
-    printf("Match Start:     %zu bytes (esperado: 34)\n", sizeof(msg_match_start_t));
-    printf("Player Move:     %zu bytes (esperado: 1)\n", sizeof(msg_player_move_t));
-    printf("Game State:      %zu bytes (esperado: 16)\n", sizeof(msg_game_state_t));
-    printf("Game Over:       %zu bytes (esperado: 3)\n", sizeof(msg_game_over_t));
-    return 0;
+int main(int argc, char *argv[]) {
+    if (argc != 3) {
+        fprintf(stderr, "Uso incorrecto.\n");
+        fprintf(stderr, "Sintaxis esperada: %s <PORT> <LogFile>\n", *argv);
+        return EXIT_FAILURE;
+    }
+
+    int port = atoi(*(argv + 1));
+    const char *log_filename = *(argv + 2);
+
+    if (port <= 1023 || port > 65535) {
+        fprintf(stderr, "[Error] Puerto inválido: %d. Debe estar en el rango 1024 - 65535.\n", port);
+        return EXIT_FAILURE;
+    }
+
+    if (logger_init(log_filename) != 0) {
+        fprintf(stderr, "[Error] No se pudo inicializar el archivo de log: %s\n", log_filename);
+        return EXIT_FAILURE;
+    }
+
+    logger_log(LOG_INFO, "=== PongServer iniciando ===");
+    logger_log(LOG_INFO, "Puerto configurado: %d", port);
+    logger_log(LOG_INFO, "Archivo de registro: %s", log_filename);
+    logger_log(LOG_INFO, "Módulo de argumentos y Logger cargado exitosamente.");
+
+    logger_close();
+    return EXIT_SUCCESS;
 }
