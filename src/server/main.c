@@ -3,6 +3,7 @@
 #include <string.h>
 #include "protocol.h"
 #include "logger.h"
+#include "server.h"
 
 int main(int argc, char *argv[]) {
     if (argc != 3) {
@@ -25,10 +26,21 @@ int main(int argc, char *argv[]) {
     }
 
     logger_log(LOG_INFO, "=== PongServer iniciando ===");
-    logger_log(LOG_INFO, "Puerto configurado: %d", port);
-    logger_log(LOG_INFO, "Archivo de registro: %s", log_filename);
-    logger_log(LOG_INFO, "Módulo de argumentos y Logger cargado exitosamente.");
+    logger_log(LOG_INFO, "Puerto objetivo: %d", port);
+    logger_log(LOG_INFO, "Archivo de log: %s", log_filename);
 
+    int server_fd = init_server_socket(port);
+    if (server_fd < 0) {
+        logger_log(LOG_ERROR, "Fallo fatal en inicialización de red. Abortando servidor.");
+        logger_close();
+        return EXIT_FAILURE;
+    }
+
+    /* Bucle concurrente del lobby y emparejamiento */
+    run_server_loop(server_fd);
+
+    close_server_socket(server_fd);
+    logger_log(LOG_INFO, "=== PongServer detenido ordenadamente ===");
     logger_close();
     return EXIT_SUCCESS;
 }
