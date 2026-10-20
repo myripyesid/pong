@@ -1,6 +1,7 @@
 \# Binarios ejecutables de C 
-# server
-# client 
+# [JUAN] Los binarios NO van al repo: se compilan con 'make' en cada máquina
+server
+client 
 *.out 
 
 # Archivos objeto temporales de compilación 

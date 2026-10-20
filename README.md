@@ -83,6 +83,17 @@ pong/
         └── logger.c             # Logger thread-safe
 ```
 
+Además, el **cliente con interfaz gráfica en Python** se incluye en:
+
+```
+client_python/
+├── Interfaz.py                  # PongClient con interfaz (protocolo binario sobre sockets)
+└── capturas/                    # Capturas de pantalla de la interfaz
+```
+
+> [_JUAN_] Los binarios `server` y `client` **no se versionan**: se compilan con
+> `make` en cada máquina, evitando subir ejecutables atados a un sistema operativo.
+
 ---
 
 ## 4. Protocolo `MyAppGameProtocol`
@@ -95,7 +106,46 @@ Protocolo **binario** de capa de aplicación. Todo mensaje inicia con un
 | `Type` | `uint8` | *Opcode* del mensaje |
 | `Payload Length` | `uint16` (Network Byte Order) | Tamaño de la carga útil |
 
-### Opcodes
+### 4.1 Jerarquía de protocolos
+
+<!-- [JUAN] Diagrama de jerarquía de protocolos (el del enunciado). -->
+
+`MyAppGameProtocol` es un protocolo de **capa de aplicación** que se integra al
+*stack* TCP/IP a través de la **API de Sockets Berkeley**:
+
+```mermaid
+flowchart TB
+    A["PongClient / PongServer<br/>(aplicación)"]
+    B["MyAppGameProtocol<br/>(protocolo de aplicación propio)"]
+    C["TCP — transmisión confiable<br/>(SOCK_STREAM)"]
+    D["IP — direccionamiento y enrutamiento"]
+    E["Ethernet / Wi-Fi — enlace físico"]
+    A --> B --> C --> D --> E
+    S["API de Sockets Berkeley:<br/>socket · bind · listen · accept · connect · send · recv"]
+    S -.-> C
+```
+
+Versión ASCII (para el tablero):
+
+```
+        +-------------------------------------+
+        |        PongClient / PongServer      |  <- APLICACIÓN
+        +-------------------------------------+
+        |         MyAppGameProtocol           |  <- NUESTRO protocolo (capa aplicación)
+        +-------------------------------------+
+        |                 TCP                 |  <- TRANSPORTE
+        +-------------------------------------+
+        |                 IP                  |  <- RED
+        +-------------------------------------+
+        |        Ethernet / Wi-Fi             |  <- ENLACE
+        +-------------------------------------+
+                    ^
+                    |  API de Sockets Berkeley
+                    |  socket() / bind() / listen() / accept() / connect()
+                    |  send() / recv() / close()
+```
+
+### 4.2 Tabla de mensajes y *Opcodes*
 
 | Opcode | Constante | Dirección | Payload | Descripción |
 | --- | --- | --- | --- | --- |
@@ -181,9 +231,9 @@ las siguientes características:
 
 - **Cliente de referencia en C** (`src/client/main.c`): realiza el registro y la
   espera de emparejamiento.
-- **Cliente con interfaz gráfica en Python 3**: implementa el mismo protocolo
-  binario sobre `socket` (API de Berkeley) y presenta la partida con una interfaz
-  tipo *neón/futurista*.
+- **Cliente con interfaz gráfica en Python 3** (`client_python/Interfaz.py`):
+  implementa el mismo protocolo binario sobre `socket` (API de Berkeley) y
+  presenta la partida con una interfaz tipo *neón/futurista*.
 
 ### 5.5 Logger
 
@@ -219,6 +269,45 @@ make clean      # elimina binarios y archivos objeto
 ./client <SERVER_IP> <PORT> <NICKNAME> <EMAIL>
 # Ejemplo:
 ./client 127.0.0.1 8080 Juan juan@mail.com
+```
+
+### _JUAN_ Ejecución del cliente con interfaz (Python 3)
+
+Requiere Python 3 y `pygame`:
+
+```bash
+python3 -m pip install --user pygame
+cd client_python
+python3 Interfaz.py
+```
+
+En la ventana:
+- **SERVIDOR (IP)** y **PUERTO**: datos del servidor (`127.0.0.1` y `8080` en local).
+- **NICKNAME** y **EMAIL**: tus datos de registro.
+- **JUGAR EN RED**: se conecta, registra y espera rival.
+- **PRÁCTICA (OFF)**: partida local contra la CPU (sin servidor).
+
+**Controles:** `W`/`↑` subir, `S`/`↓` bajar, `ESC` salir. Gana quien llegue a **5 puntos**.
+
+> Para jugar una partida completa hacen falta **dos clientes**; el servidor empareja
+> a los dos primeros jugadores que se registren.
+
+### _JUAN_ Puesta en marcha desde cero (para cualquier compañero)
+
+```bash
+git clone https://github.com/myripyesid/pong.git
+cd pong
+make                      # compila ./server y ./client
+./server 8080 pong.log    # terminal 1: levanta el servidor
+```
+
+Luego, en **dos** terminales adicionales:
+
+```bash
+cd client_python
+python3 -m pip install --user pygame   # solo la primera vez
+python3 Interfaz.py                    # cliente 1 (nick A)
+# repetir en otra terminal              # cliente 2 (nick B)
 ```
 
 ---
