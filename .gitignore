@@ -10,7 +10,9 @@
 
 # Archivos de registro / Logs 
 *.log 
+# [JUAN] Símbolos de depuración que genera gcc en macOS por el flag -g
+*.dSYM/
 # Archivos de configuración de editores
 .vscode/ 
 *.swp 
-*~
+*~ 
