@@ -69,7 +69,8 @@ pong/
 ├── docs/                        # Especificación del protocolo y diagramas UML
 │   ├── opcode-specification.md
 │   ├── socket-tcp-justification.txt
-│   └── *.png                    # Máquinas de estado y diagrama de flujo
+│   ├── diagrama-clases.md       # Diagrama de clases UML (Mermaid + ASCII) [_JUAN_]
+│   └── *.png                    # Clases, máquinas de estado y diagrama de flujo
 ├── include/                     # Cabeceras C
 │   ├── protocol.h               # Definición del protocolo binario
 │   ├── server.h                 # Estructuras del servidor
@@ -146,7 +147,6 @@ Versión ASCII (para el tablero):
 ```
 
 ### 4.2 Tabla de mensajes y *Opcodes*
-
 | Opcode | Constante | Dirección | Payload | Descripción |
 | --- | --- | --- | --- | --- |
 | `0x01` | `MSG_REGISTER_REQ` | C → S | 64 B | Registro (nickname + email) |
@@ -180,6 +180,18 @@ sequenceDiagram
 ---
 
 ## 5. Desarrollo
+
+### 5.0 Diagramas UML [_JUAN_]
+
+<!-- [JUAN] Indice de los diagramas UML del proyecto. -->
+
+| Diagrama | Archivo | Descripción |
+| --- | --- | --- |
+| **Clases** | [`docs/diagrama-clases.md`](docs/diagrama-clases.md) · `docs/Diagrama de Clases UML.png` | Estructuras, módulos y sus relaciones |
+| Jerarquía de protocolos | [§4.1](#41-jerarquía-de-protocolos) | *Stack* TCP/IP y capa de aplicación |
+| Diagrama de flujo | `docs/Diagrama de flujo UML.png` | Flujo de conexión de un usuario |
+| Máquina de estados — Cliente | `docs/Máquina de Estados del Cliente Pong.png` | Estados del cliente Pong |
+| Máquina de estados — Hilo de partida | `docs/Máquina de Estados del Hilo de Partida.png` | Estados del servidor por partida |
 
 ### 5.1 Decisiones de diseño
 

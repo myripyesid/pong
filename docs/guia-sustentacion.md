@@ -34,6 +34,49 @@
 
 ## 2. DIAGRAMAS (los que suelen pedir)
 
+### ⭐ 2.0 Diagrama de CLASES UML (si te lo piden)
+
+En C no hay clases: se **mapean** los `struct`/`enum` a clases y cada `.c` a un
+**módulo** con sus operaciones. El diagrama completo está en
+[`docs/diagrama-clases.md`](diagrama-clases.md) (Mermaid + ASCII + PNG).
+
+Versión mínima para dibujar:
+
+```
+ +----------------------+          +-----------------------+
+ |   «module» Protocol  |          |  «struct» match_ctx   |
+ +----------------------+          +-----------------------+
+ | + send_all()         |          | - match_id : uint8    |
+ | + recv_all()         |          | - p1 : player_info_t  |──┐
+ | + send_msg()         |          | - p2 : player_info_t  |──┘ 2
+ | + recv_msg()         |          +-----------------------+
+ +----------+-----------+                     ^
+            | empaqueta                       | usa
+            v                                 |
+ +----------------------+          +----------+------------+
+ |  «struct» msg_*_t    |          | «module» PongServer   |
+ |  (header + payloads) |<---------+-----------------------+
+ +----------------------+  envia   | + init_server_socket()|
+                                   | + run_server_loop()   |
+                                   | + match_worker()      |
+                                   | + input_reader_thr()  |
+                                   | + broadcast_state()   |
+                                   +----------+------------+
+                                              | registra
+                                              v
+                                   +-----------------------+
+                                   |  «module» Logger      |
+                                   +-----------------------+
+                                   | + logger_init()       |
+                                   | + logger_log()        |
+                                   | + logger_close()      |
+                                   +-----------------------+
+```
+
+**Relaciones clave:** `match_context_t` **compone** 2 `player_info_t`;
+`PongServer` **depende** de `Protocol`, `Logger` y `match_context_t`;
+`Protocol` **depende** de todos los `msg_*_t`.
+
 ### ⭐ 2.1 Jerarquía de Protocolos (el más probable)
 
 ```
