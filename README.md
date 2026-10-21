@@ -193,6 +193,9 @@ sequenceDiagram
 | Máquina de estados — Cliente | `docs/Máquina de Estados del Cliente Pong.png` | Estados del cliente Pong |
 | Máquina de estados — Hilo de partida | `docs/Máquina de Estados del Hilo de Partida.png` | Estados del servidor por partida |
 
+> 📘 **Preparación de sustentación:** [`docs/preparacion-sustentacion.md`](docs/preparacion-sustentacion.md)
+> y [`docs/guia-sustentacion.md`](docs/guia-sustentacion.md).
+
 ### 5.1 Decisiones de diseño
 
 - **TCP en lugar de UDP:** se prioriza integridad y orden del protocolo binario.
